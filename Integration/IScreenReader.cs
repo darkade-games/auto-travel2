@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace AutoTravel2.Integration
+﻿namespace AutoTravel2.Integration
 {
     public interface IScreenReader
     {
