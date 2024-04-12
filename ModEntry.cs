@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Linq;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -13,7 +12,6 @@ namespace AutoTravel2
     public sealed class ModEntry : Mod
     {
         public ModConfig Config;
-        AutoTravelMenu ActiveMenu;
         public static ModEntry Instance;
         public IScreenReader ScreenReader;
         private IModHelper helper;
@@ -99,40 +97,29 @@ namespace AutoTravel2
             {
                 ScreenReader = Helper.ModRegistry.GetApi<IScreenReader>("shoaib.stardewaccess");
             }
-
-            if (ActiveMenu == null)
-            {
-                ActiveMenu = new AutoTravelMenu();
-            }
         }
 
         private void OnMouseScroll(object sender, MouseWheelScrolledEventArgs e)
         {
             if (!Config.EnableMouseMenuScroll || e.Delta == 0) return;
 
-            if (Game1.activeClickableMenu is AutoTravelMenu)
+            if (Game1.activeClickableMenu is AutoTravelMenu autoTravelMenu)
             {
                 SButton direction = e.Delta > 0 ? Config.MenuUpButtons[0] : Config.MenuDownButtons[0];
-                ActiveMenu.ReceiveInput(direction);
+                // TODO Fix this
+                // autoTravelMenu.ReceiveInput(direction);
             }
         }
 
         private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
         {
-            if (Game1.activeClickableMenu == null)
-            {
-                ActiveMenu.CloseMenu();
-            }
+            if (Game1.activeClickableMenu != null) return;
+            if (!Context.IsPlayerFree) return;
 
-            if (Game1.activeClickableMenu is AutoTravelMenu autoTravelMenu)
+            if (e.Button == Config.OpenMenuButton)
             {
-                autoTravelMenu.ReceiveInput(e.Button);
-                return;
-            }
-
-            if (Context.IsPlayerFree && e.Button == Config.OpenMenuButton)
-            {
-                Game1.activeClickableMenu = ActiveMenu;
+                AutoTravelMenu autoTravelMenu = new AutoTravelMenu();
+                Game1.activeClickableMenu = autoTravelMenu;
 
                 if (Locations.Count > 0)
                 {
@@ -140,12 +127,12 @@ namespace AutoTravel2
 
                     if (locations.Length == 0)
                     {
-                        ActiveMenu.ShowPlayerInput();
+                        autoTravelMenu.SetChildMenu(new CustomNamingMenu(autoTravelMenu.CreateDestination, "Enter a destination"));
                     }
                     else
                     {
-                        ActiveMenu.SelectedLocation = locations[0];
-                        ActiveMenu.SaySelectedLocation(true);
+                        autoTravelMenu.SelectedLocation = locations[0];
+                        autoTravelMenu.SaySelectedLocation(true);
                     }
                 }
             }

@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using StardewModdingAPI;
@@ -21,100 +19,81 @@ namespace AutoTravel2.UI
         public static int menuHeight = 100 + borderWidth * 2 + Game1.tileSize;
 
         public TravelLocation SelectedLocation = null;
-        public bool IsInputtingNewDestination = false;
-        public TextInputBox createDestinationInput;
         public ModEntry Mod;
 
         public AutoTravelMenu() : base((int)GetMenuPosition().X, (int)GetMenuPosition().Y, menuWidth, menuHeight, false)
         {
             Mod = ModEntry.Instance;
-            createDestinationInput = new TextInputBox(null, null, Game1.dialogueFont, Game1.textColor);
-            Game1.keyboardDispatcher.Subscriber = createDestinationInput;
-            createDestinationInput.Selected = false;
-            createDestinationInput.OnBackspacePressed += this.SearchBox_OnBackspacePressed;
         }
 
-        public void ReceiveInput(SButton button)
+        public void CreateDestination(string name)
         {
-            if (createDestinationInput.Selected) return;
-            if (Mod.Config.MenuUpButtons.Contains(button)) ChangeMenu(MenuDirection.Up);
-            else if (Mod.Config.MenuDownButtons.Contains(button)) ChangeMenu(MenuDirection.Down);
-            else if (button == Mod.Config.CreateDestinationButton) ShowPlayerInput();
-        }
-
-        public void ShowPlayerInput()
-        {
-            createDestinationInput.Update();
-            IsInputtingNewDestination = true;
-            if (!createDestinationInput.Selected) createDestinationInput.SelectMe();
-            Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseCreateLocationPrompt, true);
-        }
-
-        public void ClosePlayerInput()
-        {
-            IsInputtingNewDestination = false;
-            createDestinationInput.Selected = false;
+            Mod.AddLocation(name);
+            CloseMenu();
+            Game1.exitActiveMenu();
         }
 
         public override void receiveKeyPress(Keys key)
         {
-            if (createDestinationInput.Selected)
+            if (GetChildMenu() != null)
             {
-                if (key == Mod.Config.MenuClose)
-                {
-                    CloseMenu();
-                    Game1.exitActiveMenu();
-                }
-                if (key == Mod.Config.MenuSubmit)
-                {
-                    string destination_name = createDestinationInput.Text;
-                    Mod.AddLocation(destination_name);
-                    CloseMenu();
-                    Game1.exitActiveMenu();
-                }
+                GetChildMenu().receiveKeyPress(key);
                 return;
             }
-            else
-            {
-                if (SelectedLocation != null)
-                {
-                    if (key == Mod.Config.MenuSubmit)
-                    {
-                        Mod.WarpPlayer(SelectedLocation);
-                        CloseMenu();
-                        Game1.exitActiveMenu();
-                    } else if (key == Mod.Config.MenuDelete) {
-                        Mod.RemoveLocation(SelectedLocation);
-                        CloseMenu();
-                        Game1.exitActiveMenu();
-                    } else if (key == Mod.Config.FavoriteToggleKey)
-                    {
-                        SelectedLocation.favorite = !SelectedLocation.favorite;
 
-                        if(SelectedLocation.favorite)
-                        {
-                            Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseLocationFavorited.Replace("{name}", SelectedLocation.name), true);
-                        } else
-                        {
-                            Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseLocationUnfavorited.Replace("{name}", SelectedLocation.name), true);
-                        }
-                    }
+            if (SelectedLocation != null)
+            {
+                if (Mod.Config.MenuDelete == key)
+                {
+                    Mod.RemoveLocation(SelectedLocation);
+                    CloseMenu();
+                    Game1.exitActiveMenu();
+                    return;
                 }
+                if (Mod.Config.FavoriteToggleKey == key)
+                {
+                    SelectedLocation.favorite = !SelectedLocation.favorite;
+
+                    if (SelectedLocation.favorite)
+                    {
+                        Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseLocationFavorited.Replace("{name}", SelectedLocation.name), true);
+                    }
+                    else
+                    {
+                        Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseLocationUnfavorited.Replace("{name}", SelectedLocation.name), true);
+                    }
+                    return;
+                }
+                if (Mod.Config.MenuSubmit == key)
+                {
+                    Mod.WarpPlayer(SelectedLocation);
+                    CloseMenu();
+                    Game1.exitActiveMenu();
+                    return;
+                }
+                if (Mod.Config.MenuUpButtons.Contains(key.ToSButton()))
+                {
+                    ChangeMenu(MenuDirection.Up);
+                    return;
+                }
+                if (Mod.Config.MenuDownButtons.Contains(key.ToSButton()))
+                {
+                    ChangeMenu(MenuDirection.Down);
+                    return;
+                }
+            }
+
+            if (Mod.Config.CreateDestinationButton.Equals(key.ToSButton()))
+            {
+                SetChildMenu(new CustomNamingMenu(CreateDestination, "Enter a destination"));
+                return;
             }
             base.receiveKeyPress(key);
         }
 
         public void CloseMenu()
         {
-            createDestinationInput.Text = "";
-            createDestinationInput.Selected = false;
-            IsInputtingNewDestination = false;
             SelectedLocation = null;
-        }
-
-        private void SearchBox_OnBackspacePressed(TextBox sender)
-        {
-            createDestinationInput.backSpacePressed();
         }
 
         public void SaySelectedLocation(bool first = false)
@@ -127,8 +106,25 @@ namespace AutoTravel2.UI
             }
         }
 
+        public override void update(GameTime time)
+        {
+            if (GetChildMenu() != null)
+            {
+                GetChildMenu().update(time);
+                return;
+            }
+
+            base.update(time);
+        }
+
         public override void draw(SpriteBatch b)
         {
+            if (GetChildMenu() != null)
+            {
+                GetChildMenu().draw(b);
+                return;
+            }
+
             if (SelectedLocation != null)
             {
                 string text = SelectedLocation.name;
@@ -168,37 +164,20 @@ namespace AutoTravel2.UI
                 }
             }
 
-            if (!IsInputtingNewDestination && Mod.Locations.Count() == 0) ShowPlayerInput();
-
-            createDestinationInput.X = (int)(Game1.viewport.Width / 2 - menuWidth / 2 + borderWidth - 5);
-            createDestinationInput.Y = (int)(Game1.viewport.Height / 2 - 15 + -110);
-            createDestinationInput.Width = this.width - 85;
-            createDestinationInput.Height = 192;
-
-            if (IsInputtingNewDestination)
-            {
-                createDestinationInput.Draw(b, true);
-                b.DrawString(Game1.dialogueFont, "New Destination", new Vector2(Game1.viewport.Width / 2 - menuWidth / 2 + borderWidth, Game1.viewport.Height / 2 - 15 + -116), Game1.textColor, 0, Vector2.Zero, 0.5f, SpriteEffects.None, 0);
-            }
+            if (Mod.Locations.Count == 0) SetChildMenu(new CustomNamingMenu(CreateDestination, "Enter a destination"));
 
             drawMouse(b, false, -1);
         }
 
         public override void receiveLeftClick(int x, int y, bool playSound = true)
         {
-            if (IsInputtingNewDestination)
+            if (GetChildMenu() != null)
             {
-                Rectangle r = new Rectangle(createDestinationInput.X, createDestinationInput.Y, createDestinationInput.Width, createDestinationInput.Height / 2);
-                if (r.Contains(x, y))
-                {
-                    ShowPlayerInput();
-                }
-                else
-                {
-                    createDestinationInput.Selected = false;
-                    ClosePlayerInput();
-                }
+                GetChildMenu().receiveLeftClick(x, y, playSound);
+                return;
             }
+
+            base.receiveLeftClick(x, y, playSound);
         }
 
         public void ChangeMenu(MenuDirection direction)
