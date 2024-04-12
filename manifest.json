@@ -6,5 +6,5 @@
     "UniqueID": "GrumpyCrouton.AutoTravel2",
     "EntryDll": "AutoTravel2.dll",
     "MinimumApiVersion": "3.0.0",
-    "UpdateKeys": []
+    "UpdateKeys": [ "Nexus:10693" ]
 }
