@@ -38,8 +38,18 @@ public class AutoTravelMenu : IClickableMenu
         {
             if (Mod.Config.MenuDelete == key)
             {
-                Mod.RemoveLocation(SelectedLocation);
-                Game1.exitActiveMenu();
+                if (Mod.Locations.Count > 1)
+                {
+                    var temp = Mod.GetNextLocation(SelectedLocation);
+                    Mod.RemoveLocation(SelectedLocation);
+                    SelectedLocation = temp;
+                    SaySelectedLocation(interrupt: false);
+                }
+                else
+                {
+                    Mod.RemoveLocation(SelectedLocation);
+                    Game1.exitActiveMenu();
+                }
                 return;
             }
             if (Mod.Config.FavoriteToggleKey == key)
@@ -79,17 +89,17 @@ public class AutoTravelMenu : IClickableMenu
             SetChildMenu(new CustomNamingMenu());
             return;
         }
+
         base.receiveKeyPress(key);
     }
 
-    public void SaySelectedLocation(bool first = false)
+    public void SaySelectedLocation(bool first = false, bool interrupt = true)
     {
-        if (SelectedLocation != null)
-        {
-            string say = Mod.Config.PhraseMenuSelectPrompt.Replace("{name}", SelectedLocation.name);
-            if (first) say = Mod.Config.PhraseMenuSelectPromptOpenPrefix + say;
-            Mod.ScreenReader.SayWithMenuChecker(say, true);
-        }
+        if (SelectedLocation == null) return;
+
+        string say = Mod.Config.PhraseMenuSelectPrompt.Replace("{name}", SelectedLocation.name);
+        if (first) say = Mod.Config.PhraseMenuSelectPromptOpenPrefix + say;
+        Mod.ScreenReader.SayWithMenuChecker(say, interrupt);
     }
 
     public override void update(GameTime time)
