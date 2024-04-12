@@ -6,6 +6,7 @@ using StardewValley;
 using AutoTravel2.UI;
 using System.Collections.Generic;
 using AutoTravel2.Integration;
+using Microsoft.Xna.Framework.Input;
 
 namespace AutoTravel2;
 
@@ -105,9 +106,8 @@ public sealed class ModEntry : Mod
 
         if (Game1.activeClickableMenu is AutoTravelMenu autoTravelMenu)
         {
-            SButton direction = e.Delta > 0 ? Config.MenuUpButtons[0] : Config.MenuDownButtons[0];
-            // TODO Fix this
-            // autoTravelMenu.ReceiveInput(direction);
+            (e.Delta > 0 ? Config.MenuUpButtons[0] : Config.MenuDownButtons[0]).TryGetKeyboard(out Keys key);
+            autoTravelMenu.receiveKeyPress(key);
         }
     }
 

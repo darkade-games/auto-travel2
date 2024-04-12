@@ -4,6 +4,8 @@ using StardewValley.Menus;
 
 namespace AutoTravel2.UI;
 
+// TODO Fix location name not narrating after closing this sub-menu.
+// TODO Auto-select text box if stardew access is not loaded.
 internal class CustomNamingMenu : NamingMenu
 {
     public CustomNamingMenu()
