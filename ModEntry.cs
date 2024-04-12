@@ -127,7 +127,7 @@ public sealed class ModEntry : Mod
 
                 if (locations.Length == 0)
                 {
-                    autoTravelMenu.SetChildMenu(new CustomNamingMenu(autoTravelMenu.CreateDestination, "Enter a destination"));
+                    autoTravelMenu.SetChildMenu(new CustomNamingMenu());
                 }
                 else
                 {

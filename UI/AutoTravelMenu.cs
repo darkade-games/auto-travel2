@@ -26,13 +26,6 @@ public class AutoTravelMenu : IClickableMenu
         Mod = ModEntry.Instance;
     }
 
-    public void CreateDestination(string name)
-    {
-        Mod.AddLocation(name);
-        CloseMenu();
-        Game1.exitActiveMenu();
-    }
-
     public override void receiveKeyPress(Keys key)
     {
         if (GetChildMenu() != null)
@@ -46,7 +39,6 @@ public class AutoTravelMenu : IClickableMenu
             if (Mod.Config.MenuDelete == key)
             {
                 Mod.RemoveLocation(SelectedLocation);
-                CloseMenu();
                 Game1.exitActiveMenu();
                 return;
             }
@@ -67,7 +59,6 @@ public class AutoTravelMenu : IClickableMenu
             if (Mod.Config.MenuSubmit == key)
             {
                 Mod.WarpPlayer(SelectedLocation);
-                CloseMenu();
                 Game1.exitActiveMenu();
                 return;
             }
@@ -85,15 +76,10 @@ public class AutoTravelMenu : IClickableMenu
 
         if (Mod.Config.CreateDestinationButton.Equals(key.ToSButton()))
         {
-            SetChildMenu(new CustomNamingMenu(CreateDestination, "Enter a destination"));
+            SetChildMenu(new CustomNamingMenu());
             return;
         }
         base.receiveKeyPress(key);
-    }
-
-    public void CloseMenu()
-    {
-        SelectedLocation = null;
     }
 
     public void SaySelectedLocation(bool first = false)
@@ -164,7 +150,7 @@ public class AutoTravelMenu : IClickableMenu
             }
         }
 
-        if (Mod.Locations.Count == 0) SetChildMenu(new CustomNamingMenu(CreateDestination, "Enter a destination"));
+        if (Mod.Locations.Count == 0) SetChildMenu(new CustomNamingMenu());
 
         drawMouse(b, false, -1);
     }

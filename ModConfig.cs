@@ -9,7 +9,6 @@ public class ModConfig
     public SButton OpenMenuButton { get; set; } = SButton.V;
     public Keys MenuSubmit { get; set; } = Keys.Enter;
     public Keys MenuDelete { get; set; } = Keys.Back;
-    public Keys MenuClose { get; set; } = Keys.Escape;
 
     public Keys FavoriteToggleKey { get; set; } = Keys.F;
     public SButton CreateDestinationButton { get; set; } = SButton.N;
@@ -21,7 +20,7 @@ public class ModConfig
     public string PhraseLocationCreated = "Location {name} created.";
     public string PhraseLocationDeleted = "Location {name} deleted.";
     public string PhraseFinishedTravel = "Finished Traveling.";
-    public string PhraseCreateLocationPrompt = "Create Location - Type a name, press the MenuSubmit button to save.";
+    public string PhraseCreateLocationPrompt = "Enter location name";
     public string PhraseMenuSelectPrompt = "{name} - Press the MenuSubmit button to travel.";
     public string PhraseMenuSelectPromptOpenPrefix = "Auto Travel Opened - ";
     public string PhraseLocationFavorited = "Favorited location {name}";
