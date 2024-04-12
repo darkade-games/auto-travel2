@@ -1,7 +1,6 @@
-﻿namespace AutoTravel2.Integration
+﻿namespace AutoTravel2.Integration;
+
+public interface IScreenReader
 {
-    public interface IScreenReader
-    {
-        public bool SayWithMenuChecker(string text, bool interrupt, string? customQuery = null);
-    }
+    public bool SayWithMenuChecker(string text, bool interrupt, string customQuery = null);
 }
