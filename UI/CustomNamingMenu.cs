@@ -9,7 +9,7 @@ namespace AutoTravel2.UI;
 internal class CustomNamingMenu : NamingMenu
 {
     public CustomNamingMenu()
-        : base(NamingMenuCallback, ModEntry.Instance.Config.PhraseCreateLocationPrompt, null)
+        : base(NamingMenuCallback, ModEntry.Instance.Config.PhraseCreateLocationPrompt, "")
     {
         this.textBox.Selected = false; // Unselect the text box on menu open
     }
@@ -23,7 +23,7 @@ internal class CustomNamingMenu : NamingMenu
 
     public override void receiveKeyPress(Keys key)
     {
-        if (Game1.options.doesInputListContain(Game1.options.menuButton, key))
+        if (key == Keys.Escape)
         {
             if (this.textBox.Selected)
             {
