@@ -5,19 +5,18 @@ using StardewValley.Menus;
 namespace AutoTravel2.UI;
 
 // TODO Fix location name not narrating after closing this sub-menu.
-// TODO Auto-select text box if stardew access is not loaded.
 internal class CustomNamingMenu : NamingMenu
 {
     public CustomNamingMenu()
         : base(NamingMenuCallback, ModEntry.Instance.Config.PhraseCreateLocationPrompt, "")
     {
-        this.textBox.Selected = false; // Unselect the text box on menu open
+        // Unselect the text box on menu open if stardew access is installed
+        this.textBox.Selected = !ModEntry.Instance.Helper.ModRegistry.IsLoaded("shoaib.stardewaccess");
     }
 
     public static void NamingMenuCallback(string name)
     {
         ModEntry.Instance.AddLocation(name);
-        // CloseMenu();
         Game1.exitActiveMenu();
     }
 
