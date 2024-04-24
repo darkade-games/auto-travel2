@@ -18,6 +18,7 @@ internal class CustomNamingMenu : NamingMenu
     {
         ModEntry.Instance.AddLocation(name);
         Game1.exitActiveMenu();
+        ModEntry.Instance.ScreenReader.PrevMenuQueryText = "";
     }
 
     public override void receiveKeyPress(Keys key)
