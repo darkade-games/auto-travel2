@@ -18,7 +18,7 @@ public class AutoTravelMenu : IClickableMenu
     public static int menuWidth = 600 + borderWidth * 2;
     public static int menuHeight = 100 + borderWidth * 2 + Game1.tileSize;
 
-    public TravelLocation SelectedLocation = null;
+    public TravelLocation? SelectedLocation = null;
     public ModEntry Mod;
 
     public AutoTravelMenu() : base((int)GetMenuPosition().X, (int)GetMenuPosition().Y, menuWidth, menuHeight, false)
@@ -178,7 +178,9 @@ public class AutoTravelMenu : IClickableMenu
 
     public void ChangeMenu(MenuDirection direction)
     {
-        TravelLocation NextLocation = direction == MenuDirection.Up ? Mod.GetPreviousLocation(SelectedLocation) : Mod.GetNextLocation(SelectedLocation);
+        if (SelectedLocation == null) return;
+
+        TravelLocation? NextLocation = direction == MenuDirection.Up ? Mod.GetPreviousLocation(SelectedLocation) : Mod.GetNextLocation(SelectedLocation);
         if (NextLocation != null)
         {
             Game1.playSound("shiny4");

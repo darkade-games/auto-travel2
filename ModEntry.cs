@@ -12,28 +12,30 @@ namespace AutoTravel2;
 
 public sealed class ModEntry : Mod
 {
+#pragma warning disable CS8618
     public ModConfig Config;
     public static ModEntry Instance;
 
     public IScreenReader? ScreenReader;
     private IModHelper helper;
     public List<TravelLocation> Locations = new List<TravelLocation>();
+#pragma warning restore CS8616
 
     public override void Entry(IModHelper helper)
     {
         this.helper = helper;
         Instance = this;
 
-        helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched;
-        helper.Events.GameLoop.SaveLoaded += GameLoop_SaveLoaded;
+        helper.Events.GameLoop.GameLaunched += this.GameLoop_GameLaunched;
+        helper.Events.GameLoop.SaveLoaded += this.GameLoop_SaveLoaded;
 
         helper.Events.Input.ButtonPressed += this.OnButtonPressed;
-        helper.Events.Input.MouseWheelScrolled += OnMouseScroll;
+        helper.Events.Input.MouseWheelScrolled += this.OnMouseScroll;
 
         Config = helper.ReadConfig<ModConfig>();
     }
 
-    private void GameLoop_SaveLoaded(object sender, SaveLoadedEventArgs e)
+    private void GameLoop_SaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
         if (this.Helper.Data.ReadGlobalData<List<TravelLocation>>("Character_" + Game1.player.Name) is List<TravelLocation> previousLocations)
         {
@@ -93,7 +95,7 @@ public sealed class ModEntry : Mod
         });
     }
 
-    private void GameLoop_GameLaunched(object sender, GameLaunchedEventArgs e)
+    private void GameLoop_GameLaunched(object? sender, GameLaunchedEventArgs e)
     {
         if (helper.ModRegistry.IsLoaded("shoaib.stardewaccess"))
         {
@@ -101,7 +103,7 @@ public sealed class ModEntry : Mod
         }
     }
 
-    private void OnMouseScroll(object sender, MouseWheelScrolledEventArgs e)
+    private void OnMouseScroll(object? sender, MouseWheelScrolledEventArgs e)
     {
         if (!Config.EnableMouseMenuScroll || e.Delta == 0) return;
 
@@ -112,7 +114,7 @@ public sealed class ModEntry : Mod
         }
     }
 
-    private void OnButtonPressed(object sender, ButtonPressedEventArgs e)
+    private void OnButtonPressed(object? sender, ButtonPressedEventArgs e)
     {
         if (Game1.activeClickableMenu != null) return;
         if (!Context.IsPlayerFree) return;
@@ -139,7 +141,7 @@ public sealed class ModEntry : Mod
         }
     }
 
-    public TravelLocation GetPreviousLocation(TravelLocation currentLocation)
+    public TravelLocation? GetPreviousLocation(TravelLocation currentLocation)
     {
         TravelLocation[] locations = Locations.OrderByDescending(l => l.favorite).ThenBy(l => l.name).ToArray();
 
@@ -153,10 +155,11 @@ public sealed class ModEntry : Mod
                 return locations[last_index];
             }
         }
+
         return null;
     }
 
-    public TravelLocation GetNextLocation(TravelLocation currentLocation)
+    public TravelLocation? GetNextLocation(TravelLocation currentLocation)
     {
         TravelLocation[] locations = Locations.OrderByDescending(l => l.favorite).ThenBy(l => l.name).ToArray();
 
@@ -170,6 +173,7 @@ public sealed class ModEntry : Mod
                 return locations[next_index];
             }
         }
+
         return null;
     }
 }
