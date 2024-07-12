@@ -21,6 +21,8 @@ public sealed class ModEntry : Mod
     public List<TravelLocation> Locations = new List<TravelLocation>();
 #pragma warning restore CS8616
 
+    private static string UniqueIdForCurrentSave => $"{SaveGame.FilterFileName(Game1.GetSaveGameName(false))}_{Game1.uniqueIDForThisGame}";
+
     public override void Entry(IModHelper helper)
     {
         this.helper = helper;
@@ -37,7 +39,7 @@ public sealed class ModEntry : Mod
 
     private void GameLoop_SaveLoaded(object? sender, SaveLoadedEventArgs e)
     {
-        if (this.Helper.Data.ReadGlobalData<List<TravelLocation>>("Character_" + Game1.player.Name) is List<TravelLocation> previousLocations)
+        if (this.Helper.Data.ReadGlobalData<List<TravelLocation>>(UniqueIdForCurrentSave) is List<TravelLocation> previousLocations)
         {
             Locations = previousLocations;
         }
@@ -45,7 +47,8 @@ public sealed class ModEntry : Mod
 
     public void SaveLocations()
     {
-        this.Helper.Data.WriteGlobalData("Character_" + Game1.player.Name, Locations);
+        this.Monitor.Log(UniqueIdForCurrentSave);
+        this.Helper.Data.WriteGlobalData(UniqueIdForCurrentSave, Locations);
     }
 
     public void AddLocation(string name)
