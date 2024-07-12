@@ -14,7 +14,8 @@ public sealed class ModEntry : Mod
 {
     public ModConfig Config;
     public static ModEntry Instance;
-    public IScreenReader ScreenReader;
+
+    public IScreenReader? ScreenReader;
     private IModHelper helper;
     public List<TravelLocation> Locations = new List<TravelLocation>();
 
@@ -51,19 +52,19 @@ public sealed class ModEntry : Mod
 
         if (Locations.Any(location => location.name == name))
         {
-            ScreenReader.SayWithMenuChecker(Config.PhraseLocationExists.Replace("{name}", name), true);
+            ScreenReader?.SayWithMenuChecker(Config.PhraseLocationExists.Replace("{name}", name), true);
             return;
         }
 
         Locations.Add(new(name, Game1.player.Position, Game1.currentLocation.NameOrUniqueName, Game1.player.FacingDirection));
-        ScreenReader.SayWithMenuChecker(Config.PhraseLocationCreated.Replace("{name}", name), true);
+        ScreenReader?.SayWithMenuChecker(Config.PhraseLocationCreated.Replace("{name}", name), true);
         SaveLocations();
     }
 
     public void RemoveLocation(TravelLocation location)
     {
         Locations.Remove(location);
-        ScreenReader.SayWithMenuChecker(Config.PhraseLocationDeleted.Replace("{name}", location.name), true);
+        ScreenReader?.SayWithMenuChecker(Config.PhraseLocationDeleted.Replace("{name}", location.name), true);
         Game1.playSound("shwip");
         SaveLocations();
     }
@@ -87,7 +88,7 @@ public sealed class ModEntry : Mod
                     await Task.Delay(500);
                 }
             }
-            ScreenReader.SayWithMenuChecker(Config.PhraseFinishedTravel, true);
+            ScreenReader?.SayWithMenuChecker(Config.PhraseFinishedTravel, true);
             Game1.player.faceDirection(location.facingDirection);
         });
     }

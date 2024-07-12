@@ -58,11 +58,11 @@ public class AutoTravelMenu : IClickableMenu
 
                 if (SelectedLocation.favorite)
                 {
-                    Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseLocationFavorited.Replace("{name}", SelectedLocation.name), true);
+                    Mod.ScreenReader?.SayWithMenuChecker(Mod.Config.PhraseLocationFavorited.Replace("{name}", SelectedLocation.name), true);
                 }
                 else
                 {
-                    Mod.ScreenReader.SayWithMenuChecker(Mod.Config.PhraseLocationUnfavorited.Replace("{name}", SelectedLocation.name), true);
+                    Mod.ScreenReader?.SayWithMenuChecker(Mod.Config.PhraseLocationUnfavorited.Replace("{name}", SelectedLocation.name), true);
                 }
                 return;
             }
@@ -99,7 +99,7 @@ public class AutoTravelMenu : IClickableMenu
 
         string say = Mod.Config.PhraseMenuSelectPrompt.Replace("{name}", SelectedLocation.name);
         if (first) say = Mod.Config.PhraseMenuSelectPromptOpenPrefix + say;
-        Mod.ScreenReader.SayWithMenuChecker(say, interrupt);
+        Mod.ScreenReader?.SayWithMenuChecker(say, interrupt);
     }
 
     public override void update(GameTime time)
