@@ -103,6 +103,7 @@ public sealed class ModEntry : Mod
         if (helper.ModRegistry.IsLoaded("shoaib.stardewaccess"))
         {
             ScreenReader = Helper.ModRegistry.GetApi<IScreenReader>("shoaib.stardewaccess");
+            ScreenReader?.RegisterCustomMenuAsAccessible(typeof(AutoTravelMenu).FullName);
         }
     }
 
