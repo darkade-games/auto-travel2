@@ -142,7 +142,7 @@ public class CommandManager
             string commandName = commandWithArgs[0];
             string[] args = commandWithArgs.Skip(1).ToArray();
 
-            if (CommandManager.Commands.TryGetValue(commandName, out var delegateMethod))
+            if (Commands.TryGetValue(commandName, out var delegateMethod))
             {
                 try
                 {
