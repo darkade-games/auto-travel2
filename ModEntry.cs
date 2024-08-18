@@ -7,6 +7,8 @@ using AutoTravel2.UI;
 using System.Collections.Generic;
 using AutoTravel2.Integration;
 using Microsoft.Xna.Framework.Input;
+using AutoTravel2.Commands;
+using HarmonyLib;
 
 namespace AutoTravel2;
 
@@ -27,12 +29,16 @@ public sealed class ModEntry : Mod
     {
         this.helper = helper;
         Instance = this;
+        Log.Init(this.Monitor);
 
         helper.Events.GameLoop.GameLaunched += this.GameLoop_GameLaunched;
         helper.Events.GameLoop.SaveLoaded += this.GameLoop_SaveLoaded;
 
         helper.Events.Input.ButtonPressed += this.OnButtonPressed;
         helper.Events.Input.MouseWheelScrolled += this.OnMouseScroll;
+
+        var harmony = new Harmony(this.ModManifest.UniqueID);
+        CommandManager.Register(helper, harmony);
 
         Config = helper.ReadConfig<ModConfig>();
     }
@@ -47,7 +53,6 @@ public sealed class ModEntry : Mod
 
     public void SaveLocations()
     {
-        this.Monitor.Log(UniqueIdForCurrentSave);
         this.Helper.Data.WriteGlobalData(UniqueIdForCurrentSave, Locations);
     }
 
@@ -66,16 +71,20 @@ public sealed class ModEntry : Mod
         SaveLocations();
     }
 
-    public void RemoveLocation(TravelLocation location)
+    public void RemoveLocation(TravelLocation? location)
     {
+        if (location is null) return;
+
         Locations.Remove(location);
         ScreenReader?.SayWithMenuChecker(Config.PhraseLocationDeleted.Replace("{name}", location.name), true);
         Game1.playSound("shwip");
         SaveLocations();
     }
 
-    public void WarpPlayer(TravelLocation location)
+    public void WarpPlayer(TravelLocation? location)
     {
+        if (location is null) return;
+
         Warp warp = new Warp(0, 0, location.region, (int)(location.position.X + 16f) / 64, (int)location.position.Y / 64, false, false);
         Game1.player.warpFarmer(warp, location.facingDirection);
 
