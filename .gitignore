@@ -5,6 +5,7 @@
 
 *.patch
 
+.idea/
 .vscode/*
 .git-old/
 bin/
