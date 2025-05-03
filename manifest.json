@@ -6,5 +6,8 @@
     "UniqueID": "GrumpyCrouton.AutoTravel2",
     "EntryDll": "AutoTravel2.dll",
     "MinimumApiVersion": "3.0.0",
-    "UpdateKeys": [ "Nexus:10693" ]
+    "UpdateKeys": [
+        "Github:stardew-access/auto-travel2",
+        "Nexus:10693"
+    ]
 }
